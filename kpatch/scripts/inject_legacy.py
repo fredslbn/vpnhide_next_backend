@@ -174,14 +174,24 @@ def inject_filters(profile: str) -> None:
                 "\t\t    vpnhide_should_hide_dev(fi->fib_nh[0].fib_nh_dev))\n\t\t\tcontinue;\n#endif\n\n"
             )
             fib_marker = "vpnhide_should_hide_dev(fi->fib_nh[0].fib_nh_dev)"
+        
         else:
             fib_dump_filter = (
-                "#ifdef CONFIG_VPNHIDE\n\tif (fi && fi->fib_dev && vpnhide_should_hide_dev(fi->fib_dev))\n\t\treturn 0;\n#endif\n"
+                "#ifdef CONFIG_VPNHIDE\n"
+                "\tif (fi && fi->fib_nh[0].fib_nh_dev &&\n"
+                "\t    vpnhide_should_hide_dev(fi->fib_nh[0].fib_nh_dev))\n"
+                "\t\treturn 0;\n"
+                "#endif\n"
             )
             fib_trie_filter = (
-                "#ifdef CONFIG_VPNHIDE\n\t\tif (fi && fi->fib_dev && vpnhide_should_hide_dev(fi->fib_dev))\n\t\t\tcontinue;\n#endif\n\n"
+                "#ifdef CONFIG_VPNHIDE\n"
+                "\t\tif (fi && fi->fib_nh[0].fib_nh_dev &&\n"
+                "\t\t    vpnhide_should_hide_dev(fi->fib_nh[0].fib_nh_dev))\n"
+                "\t\t\tcontinue;\n"
+                "#endif\n\n"
             )
-            fib_marker = "vpnhide_should_hide_dev(fi->fib_dev)"
+            fib_marker = "vpnhide_should_hide_dev(fi->fib_nh[0].fib_nh_dev)"
+
         if fib6_info_uses_nexthop_array():
             rt6_dev = "dst ? dst->dev : (!rt->nh ? rt->fib6_nh[0].fib_nh_dev : NULL)"
         else:
